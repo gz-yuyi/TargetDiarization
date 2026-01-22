@@ -33,7 +33,7 @@ datasets==2.21.0
 pyannote.audio
 silero_vad
 hdbscan
-umap
+umap-learn
 
 
 ### Demo ###
