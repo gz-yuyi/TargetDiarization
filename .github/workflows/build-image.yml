@@ -35,6 +35,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            DOWNLOAD_MODELS=1
           tags: |
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
