@@ -22,7 +22,7 @@ COPY . /app
 ARG DOWNLOAD_MODELS=0
 RUN if [ "${DOWNLOAD_MODELS}" = "1" ]; then \
       git lfs install --skip-repo && \
-      git-lfs clone https://www.modelscope.cn/models/jzx-ai-lab/target_diarization_models.git /app/modelscope_models && \
+      git clone https://www.modelscope.cn/models/jzx-ai-lab/target_diarization_models.git /app/modelscope_models && \
       cp -a /app/modelscope_models/. /app/ && \
       rm -rf /app/modelscope_models; \
     fi
