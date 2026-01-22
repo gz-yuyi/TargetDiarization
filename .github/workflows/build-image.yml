@@ -10,7 +10,6 @@ env:
   REGISTRY: crpi-lxfoqbwevmx9mc1q.cn-chengdu.personal.cr.aliyuncs.com
   NAMESPACE: yuyi_tech
   IMAGE_NAME: target_diarization
-  IMAGE: ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}
 
 jobs:
   build:
@@ -37,5 +36,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
