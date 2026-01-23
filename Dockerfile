@@ -29,4 +29,5 @@ RUN if [ "${DOWNLOAD_MODELS}" = "1" ]; then \
 
 EXPOSE 8000 8300
 
-CMD ["python", "main.py"]
+ENTRYPOINT ["python"]
+CMD ["webui.py"]
