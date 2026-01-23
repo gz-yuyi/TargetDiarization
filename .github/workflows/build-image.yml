@@ -37,6 +37,9 @@ jobs:
           push: true
           build-args: |
             DOWNLOAD_MODELS=1
+            DOWNLOAD_HF_MODELS=1
+          secrets: |
+            HF_TOKEN=${{ secrets.HF_TOKEN }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
