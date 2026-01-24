@@ -41,3 +41,4 @@ fastapi
 gradio
 requests
 asyncio
+typing_extensions>=4.6
