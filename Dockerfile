@@ -18,11 +18,11 @@ COPY requirements.txt /app/requirements.txt
 ARG TORCH_VERSION=2.2.2
 ARG TORCH_CUDA=cu121
 RUN python -m pip install --upgrade pip && \
-    python -m pip install \
+    PIP_USE_DEPRECATED=legacy-resolver python -m pip install -r /app/requirements.txt && \
+    python -m pip install --no-deps --force-reinstall \
       --index-url https://download.pytorch.org/whl/${TORCH_CUDA} \
       torch==${TORCH_VERSION} \
-      torchaudio==${TORCH_VERSION} && \
-    PIP_USE_DEPRECATED=legacy-resolver python -m pip install -r /app/requirements.txt
+      torchaudio==${TORCH_VERSION}
 
 COPY . /app
 
