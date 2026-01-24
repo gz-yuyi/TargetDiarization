@@ -15,7 +15,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt
+ARG TORCH_VERSION=2.2.2
+ARG TORCH_CUDA=cu121
 RUN python -m pip install --upgrade pip && \
+    python -m pip install \
+      --index-url https://download.pytorch.org/whl/${TORCH_CUDA} \
+      torch==${TORCH_VERSION} \
+      torchaudio==${TORCH_VERSION} && \
     PIP_USE_DEPRECATED=legacy-resolver python -m pip install -r /app/requirements.txt
 
 COPY . /app
