@@ -30,19 +30,17 @@ ARG DOWNLOAD_MODELS=0
 RUN if [ "${DOWNLOAD_MODELS}" = "1" ]; then \
       git lfs install --skip-repo && \
       git clone --depth 1 https://www.modelscope.cn/models/jzx-ai-lab/target_diarization_models.git /app/modelscope_models && \
-      find /app/modelscope_models -mindepth 1 -maxdepth 1 -print0 | \
-        while IFS= read -r -d '' path; do \
-          name="$(basename "$path")"; \
-          dest="/app/$name"; \
-          if [ -d "$path" ] && [ -d "$dest" ]; then \
-            find "$path" -mindepth 1 -print0 | while IFS= read -r -d '' entry; do \
-              mv -f "$entry" "$dest/"; \
-            done; \
-            rmdir "$path" 2>/dev/null || true; \
-          else \
-            mv -f "$path" /app/; \
-          fi; \
-        done && \
+      for path in /app/modelscope_models/*; do \
+        [ -e "$path" ] || continue; \
+        name="$(basename "$path")"; \
+        dest="/app/$name"; \
+        if [ -d "$path" ] && [ -d "$dest" ]; then \
+          find "$path" -mindepth 1 -maxdepth 1 -exec mv -f {} "$dest/" \; && \
+          rmdir "$path" 2>/dev/null || true; \
+        else \
+          mv -f "$path" /app/; \
+        fi; \
+      done && \
       rmdir /app/modelscope_models 2>/dev/null || true; \
     fi
 
