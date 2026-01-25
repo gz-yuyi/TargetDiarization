@@ -31,8 +31,10 @@ print("Init args:", td_args)
 td = TargetDiarization(**td_args_refined)
 
 
-def process_audio(asr_input, target_input, is_single, no_target_audio):
+def process_audio(asr_input, target_input, is_single, no_target_audio, progress=gr.Progress()):
+    progress(0, desc="准备音频")
     if asr_input.startswith("http"):
+        progress(0.05, desc="下载待检测音频")
         asr_audio = f"/tmp/{uuid.uuid4().hex}.wav"
         urllib.request.urlretrieve(asr_input, asr_audio)
     else:
@@ -40,13 +42,18 @@ def process_audio(asr_input, target_input, is_single, no_target_audio):
     target_audio = None
     if not no_target_audio:
         if target_input and target_input.startswith("http"):
+            progress(0.1, desc="下载目标说话人音频")
             target_audio = f"/tmp/{uuid.uuid4().hex}.wav"
             urllib.request.urlretrieve(target_input, target_audio)
         else:
             target_audio = target_input
+    progress(0.2, desc="预处理音频")
+    progress(0.35, desc="说话人分离与ASR")
     target_spk, asr_result, target_audio_data = td.infer(wav_file=asr_audio, target_file=target_audio, is_single=is_single)
+    progress(0.85, desc="整理输出结果")
     asr_result = str(json.dumps(asr_result, ensure_ascii=False, indent=2))
     target_audio_data = (16000, target_audio_data)
+    progress(1.0, desc="完成")
     return target_spk, asr_result, target_audio_data
 
 
