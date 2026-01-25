@@ -36,8 +36,8 @@ jobs:
           context: .
           push: true
           build-args: |
-            DOWNLOAD_MODELS=1
-            DOWNLOAD_HF_MODELS=1
+            DOWNLOAD_MODELS=0
+            DOWNLOAD_HF_MODELS=0
           secrets: |
             HF_TOKEN=${{ secrets.HF_TOKEN }}
           tags: |
