@@ -44,24 +44,6 @@ RUN if [ "${DOWNLOAD_MODELS}" = "1" ]; then \
       rmdir /app/modelscope_models 2>/dev/null || true; \
     fi
 
-ARG DOWNLOAD_HF_MODELS=0
-RUN --mount=type=secret,id=HF_TOKEN \
-    if [ "${DOWNLOAD_HF_MODELS}" = "1" ]; then \
-      if [ -f /run/secrets/HF_TOKEN ]; then \
-        HF_TOKEN=$(cat /run/secrets/HF_TOKEN) && \
-        if [ -f /app/pyannote/speaker-diarization-3.1/config.yaml ]; then \
-          echo "HuggingFace model already present; skip download."; \
-        else \
-          rm -rf /app/pyannote/speaker-diarization-3.1 && \
-          git -c http.extraHeader="Authorization: Bearer ${HF_TOKEN}" \
-            clone https://huggingface.co/pyannote/speaker-diarization-3.1 \
-            /app/pyannote/speaker-diarization-3.1; \
-        fi; \
-      else \
-        echo "HF_TOKEN secret not provided; skip HuggingFace model download."; \
-      fi; \
-    fi
-
 EXPOSE 8000 8300
 
 ENTRYPOINT ["python"]
