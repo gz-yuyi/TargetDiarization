@@ -116,6 +116,7 @@ async def startup_event():
         "vad_model_dir": os.environ.get("VAD_MODEL_DIR"),
         "separater_weights_folder": os.environ.get("SEPARATER_WEIGHTS_FOLDER"),
         "restorer_weights_folder": os.environ.get("RESTORER_WEIGHTS_FOLDER"),
+        "silence_db_threshold": float(os.environ.get("SILENCE_DB_THRESHOLD")) if os.environ.get("SILENCE_DB_THRESHOLD") is not None else None,
         "is_vad_buffer": False if os.environ.get("IS_VAD_BUFFER") == "0" else True,
         "max_buffer_duration": float(os.environ.get("MAX_BUFFER_DURATION")) if os.environ.get("MAX_BUFFER_DURATION") is not None else None,
         "vad_min_silence": float(os.environ.get("VAD_MIN_SILENCE")) if os.environ.get("VAD_MIN_SILENCE") is not None else None,

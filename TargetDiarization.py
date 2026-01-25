@@ -26,12 +26,14 @@ class TargetDiarization:
     def __init__(self,
                  diarization_pipeline_dir: str = "iic/speech_campplus_speaker-diarization_common", od_model_dir: str = "pyannote/speaker-diarization-3.1", mdx_weights_file: str = "mdx/weights/UVR-MDX-NET-Inst_HQ_3.onnx", embedding_model_dir: str = "iic/speech_eres2netv2w24s4ep4_sv_zh-cn_16k-common",
                  vad_model_dir: str = "iic/speech_fsmn_vad_zh-cn-16k-common-pytorch", asr_model_dir: str = "iic/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-pytorch", separater_weights_folder: str = "checkpoints/mossformer2-finetune", restorer_weights_folder: str = "JusperLee/Apollo",
-                 asr_engine: str = "paraformer", pyannote_clustering_threshold: float = 0.0, target_similarity_threshold: float = 0.0, cuda_device: int = 0, verbose_log: bool = False, *args, **kwargs):
+                 asr_engine: str = "paraformer", pyannote_clustering_threshold: float = 0.0, target_similarity_threshold: float = 0.0, silence_db_threshold: float = -45.0, vad_min_silence: float = 0.5, cuda_device: int = 0, verbose_log: bool = False, *args, **kwargs):
         self.file_dir = str(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/')
         self.diarization_pipeline_dir = diarization_pipeline_dir
         self.od_model_dir = od_model_dir
         self.pyannote_clustering_threshold = pyannote_clustering_threshold
         self.target_similarity_threshold = target_similarity_threshold
+        self.silence_db_threshold = silence_db_threshold
+        self.vad_min_silence = vad_min_silence
         self.asr_engine = asr_engine
         self.cuda_device = cuda_device
         self.verbose_log = verbose_log
@@ -722,8 +724,15 @@ class TargetDiarization:
             "preprocess": []
         }
         def has_speech(audio_clip: np.ndarray) -> bool:
+            if audio_clip is None or audio_clip.size == 0:
+                return False
+            if self.silence_db_threshold is not None:
+                rms = np.sqrt(np.mean(np.square(audio_clip.astype(np.float32))))
+                rms_db = 20.0 * np.log10(rms + 1e-9)
+                if rms_db < self.silence_db_threshold:
+                    return False
             try:
-                vad = self.tasr.asrp.vad_detection(wav_file=audio_clip, min_silence_sec=0.2)
+                vad = self.tasr.asrp.vad_detection(wav_file=audio_clip, min_silence_sec=self.vad_min_silence)
             except Exception as e:
                 if self.verbose_log:
                     print(f"VAD detection failed, keep clip: {e}")

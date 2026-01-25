@@ -19,7 +19,9 @@ td_args = {
     "asr_model_dir": os.environ.get("ASR_MODEL_DIR"),
     "vad_model_dir": os.environ.get("VAD_MODEL_DIR"),
     "separater_weights_folder": os.environ.get("SEPARATER_WEIGHTS_FOLDER"),
-    "restorer_weights_folder": os.environ.get("RESTORER_WEIGHTS_FOLDER")
+    "restorer_weights_folder": os.environ.get("RESTORER_WEIGHTS_FOLDER"),
+    "silence_db_threshold": float(os.environ.get("SILENCE_DB_THRESHOLD")) if os.environ.get("SILENCE_DB_THRESHOLD") is not None else None,
+    "vad_min_silence": float(os.environ.get("VAD_MIN_SILENCE")) if os.environ.get("VAD_MIN_SILENCE") is not None else None
 }
 td_args_refined = {}
 for key, value in td_args.items():
