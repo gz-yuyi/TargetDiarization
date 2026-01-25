@@ -19,7 +19,7 @@ ARG TORCH_VERSION=2.2.2
 ARG TORCH_CUDA=cu121
 RUN python -m pip install --upgrade pip && \
     PIP_USE_DEPRECATED=legacy-resolver python -m pip install -r /app/requirements.txt && \
-    python -m pip install --no-deps --force-reinstall \
+    python -m pip install --force-reinstall \
       --index-url https://download.pytorch.org/whl/${TORCH_CUDA} \
       torch==${TORCH_VERSION} \
       torchaudio==${TORCH_VERSION}
