@@ -721,6 +721,14 @@ class TargetDiarization:
             "no_punc": False,
             "preprocess": []
         }
+        def has_speech(audio_clip: np.ndarray) -> bool:
+            try:
+                vad = self.tasr.asrp.vad_detection(wav_file=audio_clip, min_silence_sec=0.2)
+            except Exception as e:
+                if self.verbose_log:
+                    print(f"VAD detection failed, keep clip: {e}")
+                return True
+            return bool(vad)
         if not sd_result:
             return asr_result
         if overlap_map:
@@ -732,6 +740,8 @@ class TargetDiarization:
         for spk in sd_result_single:
             for timerange in sd_result_single[spk]:
                 clip_audio_data = self.ap.split_audio_by_time(audio_data=audio_data, sampling_rate=sampling_rate, start_time=timerange[0], end_time=timerange[1])
+                if not has_speech(clip_audio_data):
+                    continue
                 asr_result.append({
                     "speaker": spk,
                     "timerange": timerange,
@@ -743,6 +753,8 @@ class TargetDiarization:
             for spk in sd_result_overlap:
                 for timerange in sd_result_overlap[spk]:
                     clip_audio_data = self.ap.split_audio_by_time(audio_data=audio_data, sampling_rate=sampling_rate, start_time=timerange[0], end_time=timerange[1])
+                    if not has_speech(clip_audio_data):
+                        continue
                     asr_result.append({
                         "speaker": spk,
                         "timerange": timerange,
@@ -757,6 +769,8 @@ class TargetDiarization:
                     continue
                 for timerange in sd_result_overlap[spk]:
                     clip_audio_data = self.ap.split_audio_by_time(audio_data=audio_data, sampling_rate=sampling_rate, start_time=timerange[0], end_time=timerange[1])
+                    if not has_speech(clip_audio_data):
+                        continue
                     clip_result_list = self.tasr.multi_speakers_separate_asr(asr_audio=clip_audio_data, target_embedding=target_embedding, threshold=0.0, is_output_asr=False, more_args=more_args)
                     if not clip_result_list:
                         continue

@@ -209,19 +209,17 @@ class TargetDiarizationStream(TargetDiarization):
             more_args.update({
                 "prompt": self.prev_asr_text
             })
+        audio_data = self.audio_preprocess(audio_data=audio_data, sampling_rate=16000, stream_mode=True, output_audio_only=True)
+        vad_result = self.tasr.asrp.vad_detection(audio_data)
+        if not vad_result:
+            return None
         if self.target_embedding is None:
             target_loudness = self.ap.meter_loudness(audio_data=audio_data, sampling_rate=16000)
             self.system_loudness_diff = target_loudness + 23.0
-            audio_data = self.audio_preprocess(audio_data=audio_data, sampling_rate=16000, stream_mode=True, output_audio_only=True)
             self.target_embedding = self.tasr.get_speaker_embedding(wav_file=audio_data)
             is_overlap = False
-        else:
-            audio_data = self.audio_preprocess(audio_data=audio_data, sampling_rate=16000, stream_mode=True, output_audio_only=True)
         pcm_loudness = self.ap.meter_loudness(audio_data=audio_data, sampling_rate=16000)
         if pcm_loudness < -23.0 + self.system_loudness_diff - self.loudness_diff_threshold:
-            return None
-        vad_result = self.tasr.asrp.vad_detection(audio_data)
-        if not vad_result:
             return None
 
         # import time
